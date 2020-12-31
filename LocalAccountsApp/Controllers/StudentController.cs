@@ -18,9 +18,9 @@ namespace LocalAccountsApp.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:44305/api/");
+                client.BaseAddress = new Uri("https://localhost:44305/api/");
                 //HTTP GET
-                var responseTask = client.GetAsync("school");
+                var responseTask = client.GetAsync("School");
                 responseTask.Wait();
 
                 var result = responseTask.Result;
