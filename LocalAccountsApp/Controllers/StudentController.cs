@@ -41,6 +41,11 @@ namespace LocalAccountsApp.Controllers
                 }
             }
             return View(students);
-        }      
+        } 
+        
+        public ActionResult GetToken()
+        {
+
+        }
     }
 }
