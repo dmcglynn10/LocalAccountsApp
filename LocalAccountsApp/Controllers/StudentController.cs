@@ -16,7 +16,7 @@ namespace LocalAccountsApp.Controllers
     {
 
         // GET: Student
-        public ActionResult Index()
+        /*public ActionResult Index()
         {
             IEnumerable<StudentViewModel> students = null;
 
@@ -45,7 +45,7 @@ namespace LocalAccountsApp.Controllers
                 }
             }
             return View(students);
-        } 
+        }*/ 
 
         public async Task<ActionResult> GetToken()
         {
@@ -70,15 +70,27 @@ namespace LocalAccountsApp.Controllers
             return Content(tokenBased["access_token"].ToString());
         }
         
-        /*public async Task<ActionResult> GetStudent()
+        public async Task<ActionResult> Index()
         {
+            JArray tokenBased = new JArray();
+            IEnumerable<StudentViewModel> students = null;
+
+
             using (var client = new HttpClient())
-            {
+            {               
                 client.DefaultRequestHeaders.Clear();
-                client.BaseAddress = new Uri("/Token");
+                client.BaseAddress = new Uri("https://localhost:44305");
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "");
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Session["TokenNumber"].ToString());              
+                var responseMessage = await client.GetAsync("/api/School/GetAllStudents");
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    var readTask = await responseMessage.Content.ReadAsAsync<IList<StudentViewModel>>();
+                    students = readTask;
+                }
             }
-        }*/
+            return View(students);
+        }
     }
 }

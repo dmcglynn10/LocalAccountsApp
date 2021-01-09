@@ -10,6 +10,7 @@ namespace LocalAccountsApp.Controllers
 {
     public class SchoolController : ApiController
     {
+        [Authorize]
         public IHttpActionResult GetAllStudents()
         {
             IList<StudentViewModel> students = null;
