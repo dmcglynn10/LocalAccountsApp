@@ -89,6 +89,39 @@ namespace LocalAccountsApp.Controllers
         }
 
         [HttpGet]
+        public IHttpActionResult GetStudent(int studentId)
+        {
+            StudentViewModel student = null;
+
+            using (var ctx = new SchoolDBEntities())
+            {
+                student = ctx.People.Where(s => s.PersonID == studentId).
+                    Select(s => new StudentViewModel()
+                    {
+                        Id = s.PersonID,
+                        FirstName = s.FirstName,
+                        LastName = s.LastName,
+                        Discriminator = s.Discriminator
+                    }).
+                    FirstOrDefault();
+
+            }
+
+            List<decimal> res = new List<decimal>();
+
+
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(student);
+
+
+        }
+
+        [HttpGet]
         [Route("api/School/GetAllRegisteredStudents")]
         public IHttpActionResult GetAllRegisteredStudents()
         {
@@ -101,7 +134,8 @@ namespace LocalAccountsApp.Controllers
                     {
                         Id = s.PersonID,
                         FirstName = s.FirstName,
-                        LastName = s.LastName
+                        LastName = s.LastName,
+                        Discriminator = s.Discriminator
                     }).ToList<StudentViewModel>();
 
             }
@@ -158,7 +192,8 @@ namespace LocalAccountsApp.Controllers
                 context.StudentGrades.Add(new StudentGrade()
                 {
                     CourseID = student.CourseID,
-                    StudentID = student.StudentID
+                    StudentID = student.StudentID,
+                    Grade = student.Grade
                 });
 
                 context.SaveChanges();
@@ -189,6 +224,63 @@ namespace LocalAccountsApp.Controllers
                 {
                     return NotFound();
                 }
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("api/School/UpdateStudent")]
+        public IHttpActionResult Put(StudentViewModel student)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Not a valid model");
+
+            using (var ctx = new SchoolDBEntities())
+            {
+                var studentsGrade = ctx.People.
+                    Where(s => s.PersonID == student.Id).
+                    FirstOrDefault();
+
+                if (studentsGrade != null)
+                {
+                    studentsGrade.FirstName = student.FirstName;
+                    studentsGrade.LastName = student.LastName;
+                    studentsGrade.Discriminator = student.Discriminator;
+
+                    ctx.SaveChanges();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+
+            return Ok();
+        }
+
+        public IHttpActionResult Delete(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Not a valid student id");
+
+            using (var ctx = new SchoolDBEntities())
+            {
+                var student = ctx.People
+                    .Where(s => s.PersonID == id)
+                    .FirstOrDefault();
+
+                var grades = ctx.StudentGrades
+                    .Where(s => s.StudentID == id).ToList();
+
+                foreach (var grade in grades)
+                {
+                    ctx.StudentGrades.Remove(grade);
+                }
+                ctx.SaveChanges();
+
+                ctx.Entry(student).State = System.Data.Entity.EntityState.Deleted;
+                ctx.SaveChanges();
             }
 
             return Ok();

@@ -89,13 +89,13 @@
 
         $.ajax({
             type: 'POST',
-            url: '/Token',
+            url: '/Student/GetToken',
             data: loginData
         }).done(function (data) {
             self.user(data.userName);
             // Cache the access token in session storage.
             sessionStorage.setItem(tokenKey, data.access_token);
-
+            window.location = "https://localhost:44305/Student";
         }).fail(showError);
     }
 

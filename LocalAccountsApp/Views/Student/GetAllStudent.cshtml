@@ -36,10 +36,9 @@
             @Html.DisplayFor(modelItem => item.Discriminator)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
-            @Html.ActionLink("Create Grade", "CreateNewGrade")
+            @Html.ActionLink("Edit", "EditStudent", new { id = item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id }) @if (item.Discriminator == "Student") {<span>|</span>
+@Html.ActionLink("Create Grade", "CreateNewGrade", new { id = item.Id}); }
         </td>
     </tr>
 }

@@ -60,9 +60,7 @@
         @Html.DisplayFor(model => item.Course.Title)
     </td>
     <td>
-        @Html.ActionLink("Edit", "Edit", new { id = item.StudentID, courseId = item.CourseID }) |
-        @Html.ActionLink("Details", "Details", new { id = item.StudentID }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.StudentID })
+        @Html.ActionLink("Edit", "Edit", new { id = item.StudentID, courseId = item.CourseID })
     </td>
 </tr>
 }

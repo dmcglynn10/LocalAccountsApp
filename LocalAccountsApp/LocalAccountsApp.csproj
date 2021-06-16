@@ -328,6 +328,7 @@
     <Content Include="Views\Student\GetStudentById.cshtml" />
     <Content Include="Views\Student\GetAllStudent.cshtml" />
     <Content Include="Views\Student\CreateNewGrade.cshtml" />
+    <Content Include="Views\Student\EditStudent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

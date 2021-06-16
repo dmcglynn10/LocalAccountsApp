@@ -47,7 +47,7 @@ namespace LocalAccountsApp.Controllers
             return View(students);
         }*/ 
 
-        public async Task<ActionResult> GetToken()
+        public async Task<ActionResult> GetToken(string username, string password)
         {
             JObject tokenBased = new JObject();
             
@@ -55,7 +55,7 @@ namespace LocalAccountsApp.Controllers
             {
                 client.DefaultRequestHeaders.Clear();
                 client.BaseAddress = new Uri("https://localhost:44305/");
-                string body = "grant_type=password&username=daniel@email&password=Password1!";
+                string body = "grant_type=password&username="+username+"&password="+password;
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/Token");
                 request.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
@@ -146,9 +146,13 @@ namespace LocalAccountsApp.Controllers
             return View();
         }
 
-        public ActionResult CreateNewGrade()
+        public ActionResult CreateNewGrade(int id)
         {
-            return View();
+            var grade = new StudentGradeViewModel
+            { 
+                StudentID = id 
+            };
+            return View(grade);
         }
 
         [HttpPost]
@@ -221,6 +225,51 @@ namespace LocalAccountsApp.Controllers
             return View(student);
         }
 
+        public ActionResult EditStudent(int id)
+        {
+            StudentViewModel student = null;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44305/api/");
+                //HTTP GET
+                var responseTask = client.GetAsync("School?studentId=" + id.ToString());
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsAsync<StudentViewModel>();
+                    readTask.Wait();
+
+                    student = readTask.Result;
+                }
+            }
+
+            return View(student);
+        }
+
+        [HttpPost]
+        public ActionResult EditStudent(StudentViewModel student)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44305/api/");
+
+                //HTTP POST
+                var putTask = client.PutAsJsonAsync<StudentViewModel>("School/UpdateStudent", student);
+                putTask.Wait();
+
+                var result = putTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("GetAllStudent");
+                }
+            }
+            return View(student);
+        }
+
         public ActionResult AddToCourse(int id, int courseId)
         {
             StudentGradeViewModel student = null;
@@ -264,6 +313,27 @@ namespace LocalAccountsApp.Controllers
                 }
             }
             return View(student);
+        }
+
+        public ActionResult Delete(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44305/api/");
+
+                //HTTP DELETE
+                var deleteTask = client.DeleteAsync("School/" + id.ToString());
+                deleteTask.Wait();
+
+                var result = deleteTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("GetAllStudent");
+                }
+            }
+
+            return RedirectToAction("GetAllStudent");
         }
 
         /*public async Task<ActionResult> GetStudent()
